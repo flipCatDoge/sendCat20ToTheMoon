@@ -1,5 +1,5 @@
 # Cat20代币转账及疑难杂症教程
-- [不想听废话，点我直入主题](#section1)
+- [不想听废话，点我直入主题](#1正常转账教程)
 ## 前言
 Cat20协议的第一个代币在今天凌晨打完，各路科学家都是神仙打架，简单梳理了一下，大致有几种科技:
 - **屏蔽merge省gas**
@@ -25,7 +25,7 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 昨天看到了说dotSwap平台打cat，制造了几十万的minter utxo垃圾，有可能是他们代打平台式托管代打的方式，造成了这个错误。通过阅读代码，发现可以通过修改输出的minter utxo的参数，例如将331sats修改为1sats，即可达到攻击的目的。以上只是猜测，实际流程我没去跑，没有印证修改sats是否能制造utxo垃圾。
 ![](images/sats参数.png)
 # 好了废话说完了，开始我们的转账教程
-## 1.正常转账教程 {#section1}
+## 1.正常转账教程
 使用send命令，填写正确参数即可转账，该过程，会自动对token进行merge，无需担心之前没开merge，这里转不了的情况
 **命令格式:**`sudo yarn cli send -i $token $receiver $amount --fee-rate $feeRate`
 **示例:**`send -i 45ee725c2c5993b3e4d308842d87e973bf1951f5f7a804b21e4dd964ecd12d6b_0 bc1pxxx 250 --fee-rate 40`
