@@ -23,6 +23,7 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 将上方的数值2替换为0或1，就能实现稍省gas的功能
 - **修改收件人地址，制造垃圾utxo？**
 昨天看到了说dotSwap平台打cat，制造了几十万的minter utxo垃圾，有可能是他们代打平台式托管代打的方式，造成了这个错误。通过阅读代码，发现可以通过修改输出的minter utxo的参数，例如将331sats修改为1sats，即可达到攻击的目的。以上只是猜测，实际流程我没去跑，没有印证修改sats是否能制造utxo垃圾。
+
 ![image](images/sats参数.png)
 
 # 好了废话说完了，开始我们的转账教程
@@ -35,18 +36,21 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 - `$amount`:要发送的数量，小数或者整数都可以，如果数量比较大，例如400，建议拆分成几次发送，例如每次发200，因为转账过程也是需要等待merge结果的，干脆分为几次发送，不影响结果
 - `$feeRate`:交易gas费，使用下文的脚本，可自动获取当前链上当前gas，并使用当前gas交易
 ### 很多小伙伴可能遇到了`Insufficient satoshis balance!`的错误:
+
 ![image](images/2024-09-14-22-31-59.png)
 
 查看代码，发现是由于获取可以utxo的服务，没有获取到可用的utxo，有两个原因:
 1. 节点索引未同步完全
 这种情况只能等待节点同步完成，我没有去深究。
 2. 钱包utxo有且为1
+
 ![image](images/2024-09-14-22-43-21.png)
 
 使用任意钱包，向本钱包再转一笔FB即可，例如:0.5FB，够归集的费用就行了。需要注意的是，得等到转账确认之后，再去尝试cat代币的转账
+完成上述步骤后，即可愉快的转账了
+
 ![image](images/2024-09-14-22-42-46.png)
 
-完成上述步骤后，即可愉快的转账了
 ![image](images/2024-09-15-00-13-19.png)
 
 ## 2.我只有钱包助记词，怎么转账？
@@ -69,12 +73,14 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 ##### 2. 将钱包挂载到本地服务
 导入助记词之后，并不意味着钱包就可以使用了，还需要使用export命令挂载钱包，操作如下：
 **执行:**`sudo yarn cli wallet export --create true`
+
 ![image](images/2024-09-14-22-30-00.png)
 
 上述命令适用于首次导入助记词的钱包，如果你是修改了助记词，则无需创建钱包缓存，使用下述命令即可：
 **执行:**`sudo yarn cli wallet export`
 ##### 3. 快乐的转账
 此流程参考[1.正常转账教程](#1正常转账教程)
+
 ![image](images/2024-09-15-00-13-19.png)
 
 ## 3.为什么我的服务器重启之后，无法转账和mint？
@@ -94,14 +100,18 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 ###### 觉得本文对你有帮助的话，可以请我喝杯咖啡，哈哈，肝了几个小时弄出来的教程，第一次写，有疑问的地方，欢迎留言
 请你喝杯咖啡：
 BTC:`bc1p2jq6h7syt03hvm4c3mcxhpa4j6wtxf96h8jv4gakngfvamm2trcqyd58dw`
+
 ![image](images/2024-09-15-00-22-57.png)
 
 ETH:`0x8d92d168ac7f66c97316ea02138870b2393c403f`
+
 ![image](images/2024-09-15-00-22-26.png)
 
 SOL:`ykdmHZi5gYybcj8BaaartqYkfghuHTiDkDsiVhikgfd`
+
 ![image](images/2024-09-15-00-23-19.png)
 
 **我要和你深入交流，weChat：**
+
 ![image](images/2024-09-15-00-19-57.png)
 
