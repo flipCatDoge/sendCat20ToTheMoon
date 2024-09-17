@@ -92,10 +92,18 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 - 等待节点同步完成即可
 
 ## 4.觉得输入命令很麻烦？不妨用用我写的脚本吧
-1. 将`demo.json`文件与`overOpen`文件夹，拷贝到`packages/cli`目录下；
-2. 运行脚本之前需要给脚本添加执行权限：`chmod +x ./overOpen/demo.sh`
-3. 在命令行cd到`packages/cli`目录，输入`./overOpen/demo.sh`即可运行脚本；
+1. 将`./shell`文件夹，拷贝到`packages/cli`目录下;
+2. 运行脚本之前需要给脚本添加执行权限：`chmod +x ./shell/demo.sh`;
+3. 在命令行cd到`packages/cli`目录，输入`./shell/demo.sh`即可运行脚本.
 **注意:** 需要多开的小伙伴，可以自行研究，并且`autoGas.sh`脚本肯定能帮上大忙
+
+## 5.多开mint说明
+1. 开启新的窗口，进入到`packages/cli`目录下，输入`./shell/autoGas.sh`运行获取链上实时gas脚本；
+2. 再开启新窗口，进入到`packages/cli`目录下，输入`./shell/demo.sh`，运行一键脚本；
+3. 想多开，复制`demo.sh`到同级目录，修改文件名，例如`demoNew.sh`,输入`./shell/demoNew.sh`，即可运行第二个mint环境；
+4. 继续多开，重复上述操作即可。
+**注意**通过修改`./shell/common.sh`脚本中的变量，调整mint和转账的最大gas、gas倍率以及是否开启转账的最小gas限制。
+
 有任何疑问欢迎联系我：https://x.com/jujubemelon
 ###### 觉得本文对你有帮助的话，可以请我喝杯咖啡，哈哈，肝了几个小时弄出来的教程，第一次写，有疑问的地方，欢迎留言
 请你喝杯咖啡：
