@@ -15,7 +15,7 @@ function app() {
     NC='\033[0m'        # 无颜色
     # 变量，自己设置
     #转账最大gas费，链上gas高于此值，取消转账
-    sendMaxFee=400
+    sendMaxFee=300
     #mint最大gas费
     mintMaxFee=500
     #当前gas的倍率
@@ -138,6 +138,7 @@ function app() {
             if [[ "$enableFeeAdjustment" == true ]]; then
                 if [[ "$feeRate" -lt $sendMinFee ]]; then
                     echo "链上gas小于$sendMinFee,已将gas设为$sendMinFee"
+                    echo -e "${GREEN}可前往./shell/common.sh文件中修改'sendMinFee'参数进行调整${NC}"
                     feeRate=$sendMinFee
                 fi
             else
@@ -146,11 +147,11 @@ function app() {
             feeRate=$(echo "scale=0; $coefficient * $feeRate" | bc) 
             feeRate=${feeRate%.*}
             echo "支付gas费为:$feeRate"
-
-            # 比较 feeRate 是否大于 500
+            # 比较 feeRate 是否大于 预设值
             if [ "$feeRate" -gt $sendMaxFee ]; then
                 echo -e "${YELLOW}费率超过 $sendMaxFee,跳过当前循环,请稍后重试...${NC}" | tee -a $log_file
                 echo "更改脚本中'sendMaxFee'参数,可自定义能接受的最大gas费,默认按照链上当前gas转账"
+                echo -e "${GREEN}可前往./shell/common.sh文件中修改'sendMaxFee'参数进行调整${NC}"
                 echo "取消转账，退出本脚本..."
                 exit 1
             fi
@@ -203,9 +204,10 @@ function app() {
                 feeRate=$(echo "scale=0; $coefficient * $feeRate" | bc) 
                 feeRate=${feeRate%.*}
                 echo "支付gas费为:$feeRate"
-                # 比较 mintMaxFee 是否大于 2000
+                # 比较 mintFee 是否大于 mintMaxFee
                 if [ "$feeRate" -gt $mintMaxFee ]; then
                     echo -e "${YELLOW}费率超过 $mintMaxFee,跳过当前循环,稍后重试...${NC}" | tee -a $log_file
+                    echo -e "${GREEN}请前往./shell/common.sh文件中修改'mintMaxFee'参数进行调整${NC}"
                     sleep 4
                     continue
                 fi
