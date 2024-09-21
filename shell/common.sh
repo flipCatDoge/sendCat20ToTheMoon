@@ -8,11 +8,16 @@
 
 # 公共函数
 function app() {
+    # ANSI 转义码定义
+    RED='\033[0;31m'    # 红色
+    GREEN='\033[0;32m'  # 绿色
+    YELLOW='\033[0;33m' # 黄色
+    NC='\033[0m'        # 无颜色
     # 变量，自己设置
     #转账最大gas费，链上gas高于此值，取消转账
-    sendMaxFee=1000
+    sendMaxFee=400
     #mint最大gas费
-    mintMaxFee=100
+    mintMaxFee=500
     #当前gas的倍率
     coefficient=1
     # 是否启用最小gas费功能：true，开启；false，关闭
@@ -26,20 +31,25 @@ function app() {
     myconfig="$folder/config.json" #想实现多打，可在/cli目录下创建不同的json文件，并将此处替换
     # 检查文件夹是否存在
     if [ ! -d "$folder" ]; then
-    mkdir -p "$folder"
-    configJsonFile="$folder/config.json"
-    jq --arg configFolder "$folder" '.dataDir = $configFolder' config.json > $configJsonFile
+        # 不存在该文件夹，创建folder
+        echo -e "${GREEN}正在创建文件夹:$folder${NC}"
+        mkdir -p "$folder"
+        configJsonFile="$folder/config.json"
+        echo "${GREEN}正在拷贝配置文件:$configJsonFile"
+        jq --arg configFolder "$folder" '.dataDir = $configFolder' config.json > $configJsonFile
+    else
+        configJsonFile="$folder/config.json"
+        if [ ! -d "$configJsonFile" ]; then
+            echo "${GREEN}正在拷贝配置文件:$configJsonFile${NC}"
+            jq --arg configFolder "$folder" '.dataDir = $configFolder' config.json > $configJsonFile
+        fi
     fi
 
     log_file="$folder/mint_log.txt"
     success_count=0
     # 初始化日志文件
     echo "Minting Script Started at $(date)" | tee -a $log_file
-    # ANSI 转义码定义
-    RED='\033[0;31m'    # 红色
-    GREEN='\033[0;32m'  # 绿色
-    YELLOW='\033[0;33m' # 黄色
-    NC='\033[0m'        # 无颜色
+    
 
     # 检查 curl 是否存在
     if ! command -v curl &> /dev/null; then
@@ -69,7 +79,10 @@ function app() {
         echo "-------------------------------------------"
         echo "--------------create wallet----------------"
         echo "-------------------------------------------"
+        echo -e "${GREEN}请保存好助记词!${NC}"
         $createWallet
+        echo -e "${GREEN}正在获取钱包地址...${NC}"
+        $showAddress
     elif [[ $user_input == "2" ]]; then
         echo "-------------------------------------------"
         echo "-----------show wallet address-------------"
@@ -125,7 +138,6 @@ function app() {
             if [[ "$enableFeeAdjustment" == true ]]; then
                 if [[ "$feeRate" -lt $sendMinFee ]]; then
                     echo "链上gas小于$sendMinFee,已将gas设为$sendMinFee"
-                    echo -e "${GREEN}可前往./shell/common.sh文件中修改'sendMinFee'参数进行调整${NC}"
                     feeRate=$sendMinFee
                 fi
             else
@@ -135,11 +147,10 @@ function app() {
             feeRate=${feeRate%.*}
             echo "支付gas费为:$feeRate"
 
-            # 比较 feeRate 是否大于 预设值
+            # 比较 feeRate 是否大于 500
             if [ "$feeRate" -gt $sendMaxFee ]; then
                 echo -e "${YELLOW}费率超过 $sendMaxFee,跳过当前循环,请稍后重试...${NC}" | tee -a $log_file
                 echo "更改脚本中'sendMaxFee'参数,可自定义能接受的最大gas费,默认按照链上当前gas转账"
-                echo -e "${GREEN}可前往./shell/common.sh文件中修改'sendMaxFee'参数进行调整${NC}"
                 echo "取消转账，退出本脚本..."
                 exit 1
             fi
@@ -181,7 +192,7 @@ function app() {
                     fi
                 fi
                 echo -e "正在使用当前 $feeRate 费率进行 ${GREEN}Mint${NC}" | tee -a $log_file
-
+                echo -e "Mint的token为:${GREEN}$token${NC}"
                 # 检查 feeRate 是否为有效的整数
                 if ! [[ "$feeRate" =~ ^[0-9]+$ ]]; then
                     echo -e "${RED}获取的费率无效或为空! $feeRate ${NC}" | tee -a $log_file
@@ -192,10 +203,9 @@ function app() {
                 feeRate=$(echo "scale=0; $coefficient * $feeRate" | bc) 
                 feeRate=${feeRate%.*}
                 echo "支付gas费为:$feeRate"
-                # 比较 mintFee 是否大于 mintMaxFee
+                # 比较 mintMaxFee 是否大于 2000
                 if [ "$feeRate" -gt $mintMaxFee ]; then
                     echo -e "${YELLOW}费率超过 $mintMaxFee,跳过当前循环,稍后重试...${NC}" | tee -a $log_file
-                    echo -e "${GREEN}请前往./shell/common.sh文件中修改'mintMaxFee'参数进行调整${NC}"
                     sleep 4
                     continue
                 fi
