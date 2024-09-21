@@ -207,7 +207,7 @@ function app() {
                 # 比较 mintFee 是否大于 mintMaxFee
                 if [ "$feeRate" -gt $mintMaxFee ]; then
                     echo -e "${YELLOW}费率超过 $mintMaxFee,跳过当前循环,稍后重试...${NC}" | tee -a $log_file
-                    echo -e "${GREEN}请前往./shell/common.sh文件中修改'mintMaxFee'参数进行调整${NC}"
+                    echo -e "${GREEN}可前往./shell/common.sh文件中修改'mintMaxFee'参数进行调整${NC}"
                     sleep 4
                     continue
                 fi

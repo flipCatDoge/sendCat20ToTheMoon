@@ -28,26 +28,28 @@ const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, t
 
 # 好了废话说完了，开始我们的转账教程
 ## 1.正常转账教程
-使用send命令，填写正确参数即可转账，该过程，会自动对token进行merge，无需担心之前没开merge，这里转不了的情况
-**命令格式:**`sudo yarn cli send -i $token $receiver $amount --fee-rate $feeRate`
-**示例:**`send -i 45ee725c2c5993b3e4d308842d87e973bf1951f5f7a804b21e4dd964ecd12d6b_0 bc1pxxx 250 --fee-rate 40`
+使用send命令，填写正确参数即可转账，转账程序在转账之前，会自动对token进行merge，无需担心之前mint没开merge，转账转不了的情况。
+**命令格式:**
+```sudo yarn cli send -i $token $receiver $amount --fee-rate $feeRate```
+**示例:**
+```send -i 45ee725c2c5993b3e4d308842d87e973bf1951f5f7a804b21e4dd964ecd12d6b_0 bc1pxxx 250 --fee-rate 40```
 - `$token`:代币合约地址，例如我们这次打的cat，其合约为:`45ee725c2c5993b3e4d308842d87e973bf1951f5f7a804b21e4dd964ecd12d6b_0`
 - `$receiver`:接收方的taproot地址，这里建议使用taproot格式，钱包地址的m/44和m/86不用管，不影响转账结果，只需要保证地址格式正确即可
 - `$amount`:要发送的数量，小数或者整数都可以，如果数量比较大，例如400，建议拆分成几次发送，例如每次发200，因为转账过程也是需要等待merge结果的，干脆分为几次发送，不影响结果
-- `$feeRate`:交易gas费，使用下文的脚本，可自动获取当前链上当前gas，并使用当前gas交易
+- `$feeRate`:交易gas费，使用下文的脚本，可自动获取链上当前gas，并使用当前gas交易，还可以自定义gas的倍率
 ### 很多小伙伴可能遇到了`Insufficient satoshis balance!`的错误:
 
 ![image](images/2024-09-14-22-31-59.png)
 
-查看代码，发现是由于获取可以utxo的服务，没有获取到可用的utxo，有两个原因:
+查看代码，发现是由于获取可用utxo的服务进程，没有获取到可用的utxo，有两个原因:
 1. 节点索引未同步完全
 这种情况只能等待节点同步完成，我没有去深究。
 2. 钱包utxo有且为1
 
 ![image](images/2024-09-14-22-43-21.png)
 
-使用任意钱包，向本钱包再转一笔FB即可，例如:0.5FB，够归集的费用就行了。需要注意的是，得等到转账确认之后，再去尝试cat代币的转账
-完成上述步骤后，即可愉快的转账了
+使用任意钱包(**自转也行**)，向本钱包再转一笔FB即可，例如:0.5FB，够归集的费用就行了。需要注意的是，得等到转账确认之后，再去尝试cat代币的转账
+完成上述步骤后，即可**愉快的转账**了
 
 ![image](images/2024-09-14-22-42-46.png)
 
