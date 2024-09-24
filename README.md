@@ -2,7 +2,7 @@
 - [不想听废话，点我直入主题](#1正常转账教程)
 ## 前言
 Cat20协议的第一个代币在今天凌晨打完，各路科学家都是神仙打架，简单梳理了一下，大致有几种科技:
-- **屏蔽merge省gas**
+#### **屏蔽merge省gas**
 这个问题是在打完几笔之后，发现有几笔交易的费用很高，看了一些群，大家都发现这样的问题，后来看了下日志，发现有merge的操作，罪魁祸首就是它，通过阅读官方的白皮书，有提到代币merge是为了方便管理utxo，并且随时可以做merge，那就说明mint阶段的merge是完全可以移除的，于是对merge代码进行了修改，将下方`if (tokenContracts.length > 1) {`改为`if (tokenContracts.length > 9999) {`即可，这就意外着不会触发merge过程了，其实更粗暴的方式是把mint函数中的merge函数调用删除。
 ```
 async merge(metadata, address) {
@@ -12,7 +12,8 @@ async merge(metadata, address) {
             if (tokenContracts.length > 1) {
                 const cachedTxs = new Map();
 ```
-- **修改output minter数量省gas**
+#### **修改output minter数量省gas**
+# 强烈建议各位维护mint秩序，共建社区，断子绝孙打法终究会加速cat社区死亡！！！
 默认一笔交易产生**2个output minter**，也就是说，默认打的情况下，minter utxo会呈现2^n指数级增长，到后面可用的**utxo越来越多**，其实就没必要再生成minter了，修改output的输出为1甚至0（*断子绝孙打法*），可以稍微省一点gas，百分之几，哈哈哈。
 ~~不过我很希望下次哪个大哥把这个参数改成999，你一次mint就能生成999个可用minter了，为社区做贡献，哈哈~~
 修改了项目目录下的这个js文件内容
@@ -21,7 +22,7 @@ async merge(metadata, address) {
 const mintTxIdOrErr = await (0, ft_open_minter_1.openMint)(this.configService, this.walletService, this.spendService, feeRate, feeUtxos, token, 2, minter, amount);
 ```
 将上方的数值2替换为0或1，就能实现稍省gas的功能
-- **修改收件人地址，制造垃圾utxo？**
+#### **修改收件人地址，制造垃圾utxo？**
 昨天看到了说dotSwap平台打cat，制造了几十万的minter utxo垃圾，有可能是他们代打平台式托管代打的方式，造成了这个错误。通过阅读代码，发现可以通过修改输出的minter utxo的参数，例如将331sats修改为1sats，即可达到攻击的目的。以上只是猜测，实际流程我没去跑，没有印证修改sats是否能制造utxo垃圾。
 
 ![image](images/sats参数.png)
